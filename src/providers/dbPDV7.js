@@ -1,13 +1,18 @@
-// conexaoSQL.js
 const sql = require("mssql");
 
 const config = {
-  user: process.env.PDV7_DB_USER,
-  password: process.env.PDV7_DB_PASSWORD,
   server: process.env.PDV7_DB_SERVER,
-  database: process.env.PDV7_DB_NAME,
+  authentication: {
+    type: "default",
+    options: {
+      userName: process.env.PDV7_DB_USER,
+      password: process.env.PDV7_DB_PASS,
+    },
+  },
   options: {
-    encrypt: true, // Se estiver usando conexão com SSL
+    encrypt: true,
+    trustServerCertificate: true,
+    database: process.env.PDV7_DB_NAME,
   },
 };
 
