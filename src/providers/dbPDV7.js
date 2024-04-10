@@ -16,22 +16,25 @@ const config = {
   },
 };
 
-async function conectar() {
+async function executarProc(nomeProcedure, parametros) {
   try {
-    await sql.connect(config);
-    console.log("Conectado ao SQL Server");
-  } catch (error) {
-    console.error("Erro ao conectar:", error);
-  }
-}
+    const pool = await sql.connect(config);
+    const request = pool.request();
 
-async function desconectar() {
-  try {
+    // Adicione os parâmetros à solicitação
+    for (const parametro of parametros) {
+      request.input(parametro.nome, parametro.tipo, parametro.valor);
+    }
+
+    // Execute a stored procedure
+    const result = await request.execute(nomeProcedure);
+
+    console.log(result.recordset); // Imprime o resultado da stored procedure
+  } catch (error) {
+    console.error("Erro ao executar a stored procedure:", error);
+  } finally {
     await sql.close();
-    console.log("Desconectado do SQL Server");
-  } catch (error) {
-    console.error("Erro ao desconectar:", error);
   }
 }
 
-module.exports = { conectar, desconectar };
+module.exports = { executarProc };

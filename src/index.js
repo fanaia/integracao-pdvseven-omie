@@ -4,14 +4,11 @@ const { listarProdutos, importarProdutos } = require("./services/integrarProduto
 
 async function main() {
   try {
-    await conectar();
+    const listaProdutos = await listarProdutos();
+    await importarProdutos(listaProdutos);
 
-    // const listaProdutos = await listarProdutos();
-    // await importarProdutos(listaProdutos);
   } catch (error) {
     console.error("Erro principal:", error);
-  } finally {
-    await desconectar();
   }
 }
 
