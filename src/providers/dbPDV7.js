@@ -21,15 +21,11 @@ async function executarProc(nomeProcedure, parametros) {
     const pool = await sql.connect(config);
     const request = pool.request();
 
-    // Adicione os parâmetros à solicitação
     for (const parametro of parametros) {
       request.input(parametro.nome, parametro.tipo, parametro.valor);
     }
 
-    // Execute a stored procedure
     const result = await request.execute(nomeProcedure);
-
-    console.log(result.recordset); // Imprime o resultado da stored procedure
   } catch (error) {
     console.error("Erro ao executar a stored procedure:", error);
   } finally {

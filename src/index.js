@@ -1,15 +1,14 @@
 require("dotenv").config();
-const { conectar, desconectar } = require("./providers/dbPDV7");
-const { listarProdutos, importarProdutos } = require("./services/integrarProdutosOmie");
+const { integracaoProdutos } = require("./services/integrarProdutosOmie");
 
 async function main() {
   try {
-    const listaProdutos = await listarProdutos();
-    await importarProdutos(listaProdutos);
-
+    await integracaoProdutos();
   } catch (error) {
     console.error("Erro principal:", error);
   }
 }
 
+// Executar a função main imediatamente e a cada 5 minutos
 main();
+setInterval(main, 1 * 60 * 1000);
