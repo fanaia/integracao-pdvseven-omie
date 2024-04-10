@@ -1,0 +1,16 @@
+{
+  "name": "integracao-pdvseven-omie",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "fanaia",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "mssql": "^10.0.2"
+  }
+}
