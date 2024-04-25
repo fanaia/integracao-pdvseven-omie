@@ -1,14 +1,29 @@
 require("dotenv").config();
-const { integracaoProdutos } = require("./services/integrarProdutosOmie");
+const { integracaoProdutos } = require("./services/integracaoProdutos");
+const { integracaoClientes } = require("./services/integracaoCliente");
+const { integracaoPedidos } = require("./services/integracaoPedidos");
 
-async function main() {
+const INTERVALO = 1 * 60 * 1000;
+
+async function integrar() {
   try {
-    await integracaoProdutos();
+    console.log("Iniciando integração");
+
+    // await integracaoClientes();
+    // await integracaoProdutos();
+    await integracaoPedidos();
+
+    console.log("Integração finalizada");
   } catch (error) {
     console.error("Erro principal:", error);
+  } finally {
+    setTimeout(integrar, INTERVALO);
   }
 }
 
-// Executar a função main imediatamente e a cada 5 minutos
+function main() {
+  console.log("Iniciando serviço de Integração PDVSeven x Omie");
+  integrar();
+}
+
 main();
-setInterval(main, 1 * 60 * 1000);
