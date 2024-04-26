@@ -9,7 +9,7 @@ async function integrar() {
   try {
     console.log("Iniciando integração");
 
-    // await integracaoClientes();
+    await integracaoClientes();
     // await integracaoProdutos();
     await integracaoPedidos();
 

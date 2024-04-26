@@ -5,12 +5,14 @@ async function listarPedidos(ultimaIntegracaoPedidos) {
     const sql = `
       SELECT
         cx.IDCaixa AS 'idCaixa',
+        cx.IDPDV AS 'idPDV',
         pe.IDPedido AS 'idPedido',
         pe.ValorDesconto AS 'valorDescontoPedido',
         pe.ValorEntrega AS 'valorTaxaEntrega',
+        pe.ValorServico AS 'valorServico',
         pe.ValorTotal AS 'valorTotal',
         cl.NomeCompleto AS 'nomeCliente',
-        cl.IDCliente AS 'codigoCliente',
+        cl.IDCliente AS 'idCliente',
         cl.Email AS 'emailCliente',
         pe.dtPedidoFechamento AS 'dataPedido',
         rs.arquivoCFeSAT as 'arquivoCFeSAT',
@@ -29,7 +31,7 @@ async function listarPedidos(ultimaIntegracaoPedidos) {
         pp.Quantidade AS 'quantidade',
 
         pg.IDPedidoPagamento AS 'idPedidoPagamento',
-        tp.CodigoImpressoraFiscal as 'meioPagamento',
+        pg.IDTipoPagamento as 'idTipoPagamento',
         pg.Valor AS 'valorPagamento'
       FROM
         tbProduto p
@@ -46,7 +48,9 @@ async function listarPedidos(ultimaIntegracaoPedidos) {
       WHERE
         pe.IDStatusPedido=40
         AND pg.Excluido=0
-        AND pe.idPedido=502331`;
+        AND pe.idPedido=56896
+        AND p.IDProduto>4
+        AND pp.ValorUnitario>0`;
     // p.DtPedidoFechamento > '${ultimaIntegracaoPedidos.toISOString()}'`;
 
     const result = await executarSelect(sql, []);
@@ -57,12 +61,14 @@ async function listarPedidos(ultimaIntegracaoPedidos) {
       if (!pedidos[row.idPedido]) {
         pedidos[row.idPedido] = {
           idCaixa: row.idCaixa,
+          idPDV: row.idPDV,
           idPedido: row.idPedido,
           valorDescontoPedido: row.valorDescontoPedido,
           valorTaxaEntrega: row.valorTaxaEntrega,
+          valorServico: row.valorServico,
           valorTotal: row.valorTotal,
           nomeCliente: row.nomeCliente,
-          codigoCliente: row.codigoCliente,
+          idCliente: row.idCliente,
           emailCliente: row.emailCliente,
           dataPedido: row.dataPedido,
           chaveConsulta: row.chaveConsulta,
@@ -97,7 +103,7 @@ async function listarPedidos(ultimaIntegracaoPedidos) {
       if (!isPagamentoAlreadyAdded) {
         pedidos[row.idPedido].pagamentos.push({
           idPedidoPagamento: row.idPedidoPagamento,
-          meioPagamento: row.meioPagamento,
+          idTipoPagamento: row.idTipoPagamento,
           valorPagamento: row.valorPagamento,
         });
       }

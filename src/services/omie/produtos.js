@@ -8,7 +8,7 @@ async function listarProdutos(ultimaIntegracaoProdutos) {
     const param = [
       {
         pagina: 1,
-        registros_por_pagina: 50,
+        registros_por_pagina: 500,
         apenas_importado_api: "N",
         filtrar_apenas_omiepdv: "N",
         filtrar_por_data_de: formatarData(ultimaIntegracaoProdutos),

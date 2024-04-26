@@ -22,9 +22,22 @@ async function getConfig() {
   return config;
 }
 
+async function getFormaPagByIdTipoPagamento(idTipoPagamento) {
+  const config = await getConfig();
+  const formaPag = config.formasPag.find((forma) =>
+    forma.idTipoPagamento.includes(idTipoPagamento)
+  );
+
+  if (!formaPag) {
+    throw new Error(`Forma de pagamento com idTipoPagamento ${idTipoPagamento} não encontrada`);
+  }
+
+  return formaPag;
+}
+
 async function saveConfig(config) {
   const configJson = JSON.stringify(config, null, 2);
   await fs.writeFile(configPath, configJson, "utf8");
 }
 
-module.exports = { getConfig, saveConfig };
+module.exports = { getConfig, saveConfig, getFormaPagByIdTipoPagamento };

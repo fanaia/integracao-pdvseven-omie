@@ -10,7 +10,7 @@ async function integracaoProdutos() {
     const produtos = await listarProdutos(config.ultimaIntegracaoProdutos);
     if (produtos && produtos.length > 0) {
       for (const produto of produtos) {
-        console.log("Adicionando produto", produto.descricao);
+        console.log("Incluir produto", produto.descricao);
         await importarProduto(produto);
       }
 
