@@ -1,6 +1,6 @@
 const { executarSelect } = require("../../providers/dbPDV7");
 
-async function listarPedidos(ultimaIntegracaoPedidos) {
+async function listarPedidos(idCaixa) {
   try {
     const sql = `
       SELECT
@@ -18,6 +18,7 @@ async function listarPedidos(ultimaIntegracaoPedidos) {
         rs.arquivoCFeSAT as 'arquivoCFeSAT',
 
         pp.IDPedidoProduto AS 'idPedidoProduto',
+        p.IDProduto AS 'idProduto',
         p.Nome AS 'nomeProduto',
         b.NCM AS 'ncm',
         c.CFOP AS 'cfop',
@@ -29,6 +30,7 @@ async function listarPedidos(ultimaIntegracaoPedidos) {
         ISNULL(pp.ValorDesconto, 0) AS 'valorDescontoProduto',
         pp.ValorUnitario AS 'valorUnitario',
         pp.Quantidade AS 'quantidade',
+        pp.DtInclusao AS 'dtInclusaoProduto',
 
         pg.IDPedidoPagamento AS 'idPedidoPagamento',
         pg.IDTipoPagamento as 'idTipoPagamento',
@@ -48,10 +50,12 @@ async function listarPedidos(ultimaIntegracaoPedidos) {
       WHERE
         pe.IDStatusPedido=40
         AND pg.Excluido=0
-        AND pe.idPedido=56896
-        AND p.IDProduto>4
-        AND pp.ValorUnitario>0`;
-    // p.DtPedidoFechamento > '${ultimaIntegracaoPedidos.toISOString()}'`;
+        AND pp.Cancelado=0
+        AND pp.ValorUnitario>0
+        AND pe.IDCaixa=${idCaixa}
+      ORDER BY 
+        pe.IDPedido,
+        pp.IDProduto`;
 
     const result = await executarSelect(sql, []);
 
@@ -85,6 +89,7 @@ async function listarPedidos(ultimaIntegracaoPedidos) {
       if (!isProdutoAlreadyAdded) {
         pedidos[row.idPedido].produtos.push({
           idPedidoProduto: row.idPedidoProduto,
+          idProduto: row.idProduto,
           nomeProduto: row.nomeProduto,
           ncm: row.ncm,
           cfop: row.cfop,
@@ -94,6 +99,7 @@ async function listarPedidos(ultimaIntegracaoPedidos) {
           valorDescontoProduto: row.valorDescontoProduto,
           valorUnitario: row.valorUnitario,
           quantidade: row.quantidade,
+          dtInclusaoProduto: row.dtInclusaoProduto,
         });
       }
 

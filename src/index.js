@@ -2,6 +2,7 @@ require("dotenv").config();
 const { integracaoProdutos } = require("./services/integracaoProdutos");
 const { integracaoClientes } = require("./services/integracaoCliente");
 const { integracaoPedidos } = require("./services/integracaoPedidos");
+const { integracaoOP } = require("./services/integracaoOP");
 
 const INTERVALO = 1 * 60 * 1000;
 
@@ -9,9 +10,10 @@ async function integrar() {
   try {
     console.log("Iniciando integração");
 
-    await integracaoClientes();
+    // await integracaoClientes();
     // await integracaoProdutos();
     await integracaoPedidos();
+    // await integracaoOP();
 
     console.log("Integração finalizada");
   } catch (error) {

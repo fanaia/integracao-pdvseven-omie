@@ -9,6 +9,18 @@ async function incluirCupomFiscal(cupomFiscal) {
       return total + produto.quantidade * produto.valorUnitario;
     }, 0);
 
+    const groupedProducts = cupomFiscal.produtos.reduce((acc, produto) => {
+      const key = `${produto.codigoProduto}-${produto.valorUnitario}`;
+
+      if (!acc[key]) {
+        acc[key] = { ...produto };
+      } else {
+        acc[key].quantidade += produto.quantidade;
+      }
+
+      return acc;
+    }, {});
+
     const param = [
       {
         caixa: {
@@ -20,7 +32,7 @@ async function incluirCupomFiscal(cupomFiscal) {
           chCFe: cupomFiscal.chaveConsulta.replace("CFe", ""),
           dEmi: formatarData(cupomFiscal.dataPedido),
           hEmi: formatarHora(cupomFiscal.dataPedido),
-          det: cupomFiscal.produtos.map((produto, index) => {
+          det: Object.values(groupedProducts).map((produto, index) => {
             const valorProduto = produto.valorUnitario * produto.quantidade;
             const valorDesconto =
               produto.valorDescontoProduto +
@@ -72,8 +84,8 @@ async function incluirCupomFiscal(cupomFiscal) {
           cupomFiscal.pagamentos.map(async (pagamento, index) => {
             const formaPag = await getFormaPagByIdTipoPagamento(pagamento.idTipoPagamento);
 
-            const vTaxa = pagamento.valorPagamento * formaPag.pTaxa;
-            const vLiq = pagamento.valorPagamento - vTaxa;
+            const vTaxa = (pagamento.valorPagamento * formaPag.pTaxa) / 100;
+            const vLiq = pagamento.valorPagamento;
 
             return {
               lCanc: false,
@@ -121,11 +133,57 @@ async function incluirCupomFiscal(cupomFiscal) {
     // console.log(JSON.stringify(body, null, 2));
 
     const response = await apiOmie.post("produtos/cupomfiscalincluir/", body);
-    console.log(response.data?.faultstring);
+    // console.log(response.data?.faultstring);
     return response.data;
   } catch (error) {
     throw error;
   }
 }
 
-module.exports = { incluirCupomFiscal };
+async function fecharCaixa(caixa) {
+  try {
+    const param = [
+      {
+        emissor: {
+          emiNome: process.env.EMISSOR_NOME,
+          emiVersao: process.env.EMISSOR_VERSAO,
+          emiSerial: process.env.EMISSOR_SERIAL,
+          emiId: caixa.idPDV,
+        },
+        seqCaixa: caixa.idCaixa,
+        fechamento: {
+          dAbertura: formatarData(caixa.dtAbertura),
+          hAbertura: formatarHora(caixa.dtAbertura),
+          vAbertura: caixa.valorAbertura,
+          dFechamento: formatarData(caixa.dtFechamento),
+          hFechamento: formatarHora(caixa.dtFechamento),
+          vFechamento: caixa.valorFechamento,
+        },
+      },
+    ];
+
+    const body = {
+      call: "FecharCaixa",
+      app_key: omieAuth.appKey,
+      app_secret: omieAuth.appSecret,
+      param,
+    };
+
+    // console.log(JSON.stringify(body, null, 2));
+
+    const response = await apiOmie.post("produtos/cupomfiscalincluir/", body);
+    return response.data;
+  } catch (error) {
+    if (
+      error.response &&
+      error.response.data &&
+      error.response.data.faultstring === "ERROR: Não existem registros para a página [1]!"
+    )
+      console.log("Sem produtos para produzir");
+    else console.error("Erro ao obter registros da API:", error);
+
+    return [];
+  }
+}
+
+module.exports = { incluirCupomFiscal, fecharCaixa };

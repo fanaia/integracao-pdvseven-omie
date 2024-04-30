@@ -11,9 +11,9 @@ async function getConfig() {
     config.ultimaIntegracaoProdutos = new Date("2000-01-01T00:00:00");
   else config.ultimaIntegracaoProdutos = new Date(config.ultimaIntegracaoProdutos);
 
-  if (!config.ultimaIntegracaoPedidos)
-    config.ultimaIntegracaoPedidos = new Date("2000-01-01T00:00:00");
-  else config.ultimaIntegracaoPedidos = new Date(config.ultimaIntegracaoPedidos);
+  if (!config.ultimaIntegracaoCaixas)
+    config.ultimaIntegracaoCaixas = new Date("2000-01-01T00:00:00");
+  else config.ultimaIntegracaoCaixas = new Date(config.ultimaIntegracaoCaixas);
 
   if (!config.ultimaIntegracaoClientes)
     config.ultimaIntegracaoClientes = new Date("2000-01-01T00:00:00");
