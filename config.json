@@ -1,52 +1,66 @@
 {
-  "ultimaIntegracaoProdutos": "2024-04-29T17:41:11.000Z",
-  "ultimaIntegracaoCaixas": "2000-01-01T02:00:00.000Z",
+  "ultimaIntegracaoProdutos": "2024-05-03T14:17:56.000Z",
+  "ultimaIntegracaoCaixas": "2024-05-01T22:24:44.313Z",
   "ultimaIntegracaoClientes": "2024-04-29T14:34:41.780Z",
   "formasPag": [
     {
-      "idTipoPagamento": [1],
+      "idTipoPagamento": [
+        1
+      ],
       "pTaxa": 0,
       "cCategoria": "1.01.93",
       "cTipoPag": "DIN",
       "idConta": 6878637055
     },
     {
-      "idTipoPagamento": [6],
-      "pTaxa": 2,
+      "idTipoPagamento": [
+        6
+      ],
+      "pTaxa": 0,
       "cCategoria": "1.01.93",
       "cTipoPag": "PIX",
-      "idConta": 6879735372
+      "idConta": 6877998271
     },
     {
-      "idTipoPagamento": [8],
+      "idTipoPagamento": [
+        8
+      ],
       "pTaxa": 1.28,
       "cCategoria": "1.01.93",
       "cTipoPag": "CRD",
       "idConta": 6879735372
     },
     {
-      "idTipoPagamento": [10],
+      "idTipoPagamento": [
+        10
+      ],
       "pTaxa": 1.99,
       "cCategoria": "1.01.93",
       "cTipoPag": "CRD",
       "idConta": 6879735372
     },
     {
-      "idTipoPagamento": [11],
+      "idTipoPagamento": [
+        11
+      ],
       "pTaxa": 2.07,
       "cCategoria": "1.01.93",
       "cTipoPag": "CRC",
       "idConta": 6879735372
     },
     {
-      "idTipoPagamento": [13],
+      "idTipoPagamento": [
+        13
+      ],
       "pTaxa": 3.65,
       "cCategoria": "1.01.93",
       "cTipoPag": "CRC",
       "idConta": 6879735372
     },
     {
-      "idTipoPagamento": [14],
+      "idTipoPagamento": [
+        14
+      ],
       "pTaxa": 2,
       "cCategoria": "1.01.93",
       "cTipoPag": "CRC",

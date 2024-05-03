@@ -1,5 +1,4 @@
 const sql = require("mssql");
-
 const config = {
   server: process.env.PDV7_DB_SERVER,
   authentication: {
@@ -16,9 +15,18 @@ const config = {
   },
 };
 
+let pool;
+
+async function getPool() {
+  if (!pool) {
+    pool = await sql.connect(config);
+  }
+  return pool;
+}
+
 async function executarProc(nomeProcedure, parametros) {
   try {
-    const pool = await sql.connect(config);
+    const pool = await getPool();
     const request = pool.request();
 
     for (const parametro of parametros) {
@@ -26,49 +34,31 @@ async function executarProc(nomeProcedure, parametros) {
     }
 
     const result = await request.execute(nomeProcedure);
+    return result.recordset;
   } catch (error) {
     console.error("Erro ao executar a stored procedure:", error);
-  } finally {
-    await sql.close();
+    throw error;
   }
 }
 
 async function executarQuery(query, parametros) {
   try {
-    const pool = await sql.connect(config);
+    const pool = await getPool();
     const request = pool.request();
 
     for (const parametro of parametros) {
       request.input(parametro.nome, parametro.tipo, parametro.valor);
     }
 
-    await request.query(query);
+    const result = await request.query(query);
+    return result.recordset;
   } catch (error) {
     console.error("Erro ao executar a query:", error);
-  } finally {
-    await sql.close();
+    throw error;
   }
 }
 
-async function executarSelect(query, parametros) {
-  let result = null;
-
-  try {
-    const pool = await sql.connect(config);
-    const request = pool.request();
-
-    for (const parametro of parametros) {
-      request.input(parametro.nome, parametro.tipo, parametro.valor);
-    }
-
-    result = await request.query(query);
-  } catch (error) {
-    console.error("Erro ao executar o SELECT:", error);
-  } finally {
-    await sql.close();
-  }
-
-  return result.recordset;
-}
-
-module.exports = { executarProc, executarQuery, executarSelect };
+module.exports = {
+  executarProc,
+  executarQuery,
+};

@@ -87,7 +87,7 @@ async function incluirCupomFiscal(cupomFiscal) {
             const vTaxa = (pagamento.valorPagamento * formaPag.pTaxa) / 100;
             const vLiq = pagamento.valorPagamento;
 
-            return {
+            let result = {
               lCanc: false,
               pag: {
                 pTaxa: formaPag.pTaxa,
@@ -101,15 +101,20 @@ async function incluirCupomFiscal(cupomFiscal) {
                 cTipoPag: formaPag.cTipoPag,
                 idConta: formaPag.idConta,
               },
-              parcelas: [
+              seqPag: index + 1,
+            };
+
+            if (formaPag.cTipoPag !== "DIN") {
+              result.parcelas = [
                 {
                   dVenc: formatarData(cupomFiscal.dataPedido),
                   nParc: 1,
                   vParc: pagamento.valorPagamento,
                 },
-              ],
-              seqPag: index + 1,
-            };
+              ];
+            }
+
+            return result;
           })
         ),
         sat: {
@@ -136,7 +141,10 @@ async function incluirCupomFiscal(cupomFiscal) {
     // console.log(response.data?.faultstring);
     return response.data;
   } catch (error) {
-    throw error;
+    // throw error;
+    console.log(
+      `Erro ao incluir cupom fiscal idPedido ${cupomFiscal.idPedido}: ${error.response?.data.faultstring}`
+    );
   }
 }
 
@@ -180,7 +188,9 @@ async function fecharCaixa(caixa) {
       error.response.data.faultstring === "ERROR: Não existem registros para a página [1]!"
     )
       console.log("Sem produtos para produzir");
-    else console.error("Erro ao obter registros da API:", error);
+    else {
+      console.error("Erro ao obter registros da API:", error);
+    }
 
     return [];
   }

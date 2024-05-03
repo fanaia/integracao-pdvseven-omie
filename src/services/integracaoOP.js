@@ -2,7 +2,7 @@ const { listarPosEstoqueProdutosAcabados } = require("./omie/estoque");
 const { incluirOrdemProducao, concluirOrdemProducao } = require("./omie/ordemProducao");
 
 async function integracaoOP() {
-  console.log("Integração com OP");
+  console.log("Integração Ordem de Produção");
 
   const produtos = await listarPosEstoqueProdutosAcabados(new Date());
   if (produtos && produtos.length > 0) {

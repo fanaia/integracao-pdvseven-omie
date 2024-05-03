@@ -4,13 +4,15 @@ const { listarProdutos, obterDataMaisRecente } = require("./omie/produtos");
 const { importarProduto } = require("./pdv7/produtos");
 
 async function integracaoProdutos() {
+  console.log("Integração Produtos");
+
   try {
     const config = await getConfig();
 
     const produtos = await listarProdutos(config.ultimaIntegracaoProdutos);
     if (produtos && produtos.length > 0) {
       for (const produto of produtos) {
-        console.log("Incluir produto", produto.descricao);
+        console.log("Produto", produto.descricao);
         await importarProduto(produto);
       }
 

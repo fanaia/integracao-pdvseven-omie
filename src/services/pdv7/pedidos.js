@@ -1,4 +1,4 @@
-const { executarSelect } = require("../../providers/dbPDV7");
+const { executarQuery } = require("../../providers/dbPDV7");
 
 async function listarPedidos(idCaixa) {
   try {
@@ -7,9 +7,9 @@ async function listarPedidos(idCaixa) {
         cx.IDCaixa AS 'idCaixa',
         cx.IDPDV AS 'idPDV',
         pe.IDPedido AS 'idPedido',
-        pe.ValorDesconto AS 'valorDescontoPedido',
-        pe.ValorEntrega AS 'valorTaxaEntrega',
-        pe.ValorServico AS 'valorServico',
+        ISNULL(pe.ValorDesconto, 0) AS 'valorDescontoPedido',
+        ISNULL(pe.ValorEntrega, 0) AS 'valorTaxaEntrega',
+        ISNULL(pe.ValorServico, 0) AS 'valorServico',
         pe.ValorTotal AS 'valorTotal',
         cl.NomeCompleto AS 'nomeCliente',
         cl.IDCliente AS 'idCliente',
@@ -46,18 +46,21 @@ async function listarPedidos(idCaixa) {
         INNER JOIN tbUnidade u ON u.IDUnidade = p.IDUnidade
         INNER JOIN tbRetornoSAT rs ON rs.IDRetornoSAT=pe.IDRetornoSAT_venda
         INNER JOIN tbCaixa cx ON cx.IDCaixa=pe.IDCaixa
-        LEFT JOIN tbCliente cl ON cl.IDCliente = pe.IDCliente
+        INNER JOIN tbCliente cl ON cl.IDCliente = pe.IDCliente
       WHERE
         pe.IDStatusPedido=40
         AND pg.Excluido=0
         AND pp.Cancelado=0
+        AND pp.IDProduto<>4
         AND pp.ValorUnitario>0
         AND pe.IDCaixa=${idCaixa}
       ORDER BY 
         pe.IDPedido,
-        pp.IDProduto`;
+        pp.IDPedidoProduto`;
 
-    const result = await executarSelect(sql, []);
+    // AND pe.IDPedido=59975
+
+    const result = await executarQuery(sql, []);
 
     const pedidos = {};
 

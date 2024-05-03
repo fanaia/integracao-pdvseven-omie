@@ -1,4 +1,4 @@
-const { executarSelect } = require("../../providers/dbPDV7");
+const { executarQuery } = require("../../providers/dbPDV7");
 
 async function listarCaixasFechados(ultimaIntegracaoCaixas) {
   try {
@@ -11,14 +11,15 @@ async function listarCaixasFechados(ultimaIntegracaoCaixas) {
         tbCaixa c
         LEFT JOIN tbCaixaValorRegistro cvr ON cvr.idCaixa=c.idCaixa
       WHERE
-        c.idCaixa IN (18087)
-        AND dtFechamento>'${ultimaIntegracaoCaixas.toISOString()}'
+        dtFechamento>'${ultimaIntegracaoCaixas.toISOString()}'
       GROUP BY
         c.idCaixa, c.idPDV, c.dtAbertura, c.dtFechamento 
       ORDER BY c.dtFechamento DESC `;
 
+      // console.log(sql)
+
     // const sql = `SELECT idCaixa, idPDV, dtAbertura, dtFechamento FROM tbCaixa DtFechamento WHERE idCaixa=18087`;
-    const result = await executarSelect(sql, []);
+    const result = await executarQuery(sql, []);
 
     if (result.length === 0) console.log("Sem caixas fechados para integrar");
 

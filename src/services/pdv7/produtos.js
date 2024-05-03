@@ -1,4 +1,4 @@
-const { executarQuery, executarSelect } = require("../../providers/dbPDV7");
+const { executarQuery } = require("../../providers/dbPDV7");
 
 async function importarProduto(produto) {
   try {
@@ -12,13 +12,13 @@ async function importarProduto(produto) {
     }
 
     const sql = `SELECT idproduto FROM tbProduto WHERE Codigo = '${codigo_produto}' OR Nome = TRIM('${descricao}')`;
-    let product = await executarSelect(sql, []);
+    let product = await executarQuery(sql, []);
 
     if (product.length > 0) {
       const idproduto = product[0].idproduto;
       const sql = `UPDATE tbProduto SET ValorUnitario = ${valor_unitario}, Ativo = ${ativo}, Nome = '${descricao}', Codigo = '${codigo_produto}', Excluido = ${excluido} WHERE IDProduto = ${idproduto}`;
       await executarQuery(sql, []);
-      console.log(`Produto atualizado: ${descricao}`);
+      // console.log(`Produto atualizado: ${descricao}`);
     } else {
       let IDTipoProduto = 10;
       let Disponibilidade = 1;
@@ -29,7 +29,7 @@ async function importarProduto(produto) {
         VALUES ('${descricao}', ${ativo}, ${valor_unitario}, '${codigo_produto}', ${IDTipoProduto}, ${Disponibilidade}, GetDate(), GetDate(), ${ControlarEstoque}, ${UtilizarBalanca}, ${excluido})`;
 
       await executarQuery(sql, []);
-      console.log(`Produto inserido: ${descricao}`);
+      // console.log(`Produto inserido: ${descricao}`);
     }
   } catch (error) {
     console.error(`Erro ao processar produtos: ${error}`);

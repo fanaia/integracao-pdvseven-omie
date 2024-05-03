@@ -11,9 +11,9 @@ async function integrar() {
     console.log("Iniciando integração");
 
     // await integracaoClientes();
-    // await integracaoProdutos();
+    await integracaoProdutos();
     await integracaoPedidos();
-    // await integracaoOP();
+    await integracaoOP();
 
     console.log("Integração finalizada");
   } catch (error) {
