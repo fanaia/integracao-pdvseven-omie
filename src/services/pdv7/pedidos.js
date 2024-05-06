@@ -20,9 +20,9 @@ async function listarPedidos(idCaixa) {
         pp.IDPedidoProduto AS 'idPedidoProduto',
         p.IDProduto AS 'idProduto',
         p.Nome AS 'nomeProduto',
-        b.NCM AS 'ncm',
-        c.CFOP AS 'cfop',
-        c.PISSN_CST AS 'pissn_cst',
+        cf.NCM AS 'ncm',
+        tt.CFOP AS 'cfop',
+        tt.PISSN_CST AS 'pissn_cst',
         rs.chaveConsulta AS 'chaveConsulta',
         rs.numeroSessao AS 'numeroSessao',
         p.Codigo AS 'codigoProduto',
@@ -36,29 +36,29 @@ async function listarPedidos(idCaixa) {
         pg.IDTipoPagamento as 'idTipoPagamento',
         pg.Valor AS 'valorPagamento'
       FROM
-        tbProduto p
-        INNER JOIN tbPedidoProduto pp ON pp.IDProduto = p.IDProduto
-        INNER JOIN tbPedido pe ON pe.IDPedido = pp.IDPedido
-        INNER JOIN tbPedidoPagamento pg ON pg.IDPedido=pe.IDPedido
-        INNER JOIN tbTipoPagamento tp ON tp.IDTipoPagamento=pg.IDTipoPagamento
-        INNER JOIN tbClassificacaoFiscal b ON p.IDClassificacaoFiscal = b.IDClassificacaoFiscal
-        INNER JOIN tbTipoTributacao c ON c.IDTipoTributacao = b.IDTipoTributacao
-        INNER JOIN tbUnidade u ON u.IDUnidade = p.IDUnidade
-        INNER JOIN tbRetornoSAT rs ON rs.IDRetornoSAT=pe.IDRetornoSAT_venda
-        INNER JOIN tbCaixa cx ON cx.IDCaixa=pe.IDCaixa
-        INNER JOIN tbCliente cl ON cl.IDCliente = pe.IDCliente
+        tbCaixa cx (NOLOCK)
+        LEFT JOIN tbPedido pe (NOLOCK) ON pe.IDCaixa=cx.IDCaixa
+        LEFT JOIN tbRetornoSAT rs (NOLOCK) ON rs.IDRetornoSAT=pe.IDRetornoSAT_venda
+        INNER JOIN tbPedidoProduto pp (NOLOCK) ON pp.IDPedido=pe.IDPedido
+        INNER JOIN tbPedidoPagamento pg (NOLOCK) ON pg.IDPedido=pe.IDPedido
+        INNER JOIN tbCliente cl (NOLOCK) ON cl.IDCliente=pe.IDCliente
+        LEFT JOIN tbProduto p (NOLOCK) ON p.IDProduto=pp.IDProduto
+        LEFT JOIN tbUnidade u (NOLOCK) ON u.IDUnidade=p.IDUnidade
+        LEFT JOIN tbTipoPagamento tp (NOLOCK) ON tp.IDTipoPagamento=pg.IDTipoPagamento
+        LEFT JOIN tbClassificacaoFiscal cf (NOLOCK) ON cf.IDClassificacaoFiscal=p.IDClassificacaoFiscal
+        LEFT JOIN tbTipoTributacao tt (NOLOCK) ON tt.IDTipoTributacao=cf.IDTipoTributacao
       WHERE
-        pe.IDStatusPedido=40
-        AND pg.Excluido=0
+        pe.IDCaixa=${idCaixa}
+        AND pe.IDStatusPedido=40
         AND pp.Cancelado=0
         AND pp.IDProduto<>4
         AND pp.ValorUnitario>0
-        AND pe.IDCaixa=${idCaixa}
+        AND pg.Excluido=0
       ORDER BY 
         pe.IDPedido,
-        pp.IDPedidoProduto`;
-
-    // AND pe.IDPedido=59975
+        pp.IDPedidoProduto
+    `;
+    // AND pe.IDPedido=60231
 
     const result = await executarQuery(sql, []);
 

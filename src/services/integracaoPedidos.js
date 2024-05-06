@@ -21,11 +21,11 @@ async function integracaoPedidos() {
           await incluirCupomFiscal(pedido);
         }
       }
-      await fecharCaixa(caixa);
+      // await fecharCaixa(caixa);
     }
 
-      config.ultimaIntegracaoCaixas = await obterDataMaisRecente(caixas);
-      await saveConfig(config);
+      // config.ultimaIntegracaoCaixas = await obterDataMaisRecente(caixas);
+      // await saveConfig(config);
   }
 }
 

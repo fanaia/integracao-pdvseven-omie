@@ -13,6 +13,7 @@ const config = {
     trustServerCertificate: true,
     database: process.env.PDV7_DB_NAME,
   },
+  requestTimeout: 60000, // tempo limite de 60 segundos
 };
 
 let pool;

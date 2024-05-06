@@ -13,7 +13,7 @@ async function integrar() {
     // await integracaoClientes();
     await integracaoProdutos();
     await integracaoPedidos();
-    await integracaoOP();
+    // await integracaoOP();
 
     console.log("Integração finalizada");
   } catch (error) {

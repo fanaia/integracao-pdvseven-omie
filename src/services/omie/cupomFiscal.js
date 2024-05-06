@@ -39,9 +39,9 @@ async function incluirCupomFiscal(cupomFiscal) {
               (cupomFiscal.valorDescontoPedido / valorProdutos) * valorProduto;
             const valorServico = (cupomFiscal.valorServico / valorProdutos) * valorProduto;
 
-            const vDesc = valorDesconto;
-            const vItem = valorProduto - valorDesconto + valorServico;
-            const vProd = valorProduto - valorDesconto;
+            const vDesc = Math.round(valorDesconto * 100) / 100;
+            const vItem = Math.round((valorProduto - valorDesconto + valorServico) * 100) / 100;
+            const vProd = Math.round((valorProduto - valorDesconto) * 100) / 100;
 
             return {
               lCanc: false,
