@@ -1,4 +1,5 @@
 const { apiOmie, omieAuth } = require("../../providers/apiOmie");
+const logger = require("../../providers/logger");
 
 async function consultarCliente(cliente) {
   try {
@@ -21,10 +22,11 @@ async function consultarCliente(cliente) {
     if (
       error.response &&
       error.response.data &&
-      error.response.data.faultstring === "ERROR: Cliente não cadastrado para o Código [0] !"
+      error.response.data.faultstring.includes("não cadastrado")
     )
       return null;
-    else throw error;
+
+    logger.error("Erro ao consultar cliente (omie)", cliente, error);
   }
 }
 
@@ -50,11 +52,9 @@ async function incluirCliente(cliente) {
       error.response &&
       error.response.data &&
       error.response.data.faultstring.includes("Cliente já cadastrado")
-    ) {
-      console.log(`Cliente ${cliente.idCliente} já está cadastrado.`);
-    } else {
-      throw error;
-    }
+    )
+      logger.info(`Cliente ${cliente.idCliente} já está cadastrado.`);
+    else logger.error("Erro ao incluir cliente (omie)", cliente, error);
   }
 }
 
@@ -77,14 +77,12 @@ async function alterarCliente(cliente) {
     const response = await apiOmie.post("geral/clientes/", body);
   } catch (error) {
     if (
-      error.response &&
-      error.response.data &&
-      error.response.data.faultstring.includes("Cliente não cadastrado")
-    ) {
-      console.log(`Cliente ${cliente.idCliente} não cadastrado.`);
-    } else {
-      throw error;
-    }
+      error.response ||
+      error.response.data.faultstring ||
+      error.response.data.faultstring.includes("não cadastrado")
+    )
+      logger.info(`Cliente ${cliente.idCliente} não está cadastrado.`);
+    else logger.error("Erro ao alterar cliente (omie)", cliente, error);
   }
 }
 

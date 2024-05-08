@@ -1,4 +1,5 @@
 const { apiOmie, omieAuth } = require("../../providers/apiOmie");
+const logger = require("../../providers/logger");
 const { formatarData } = require("../../utils/dateUtils");
 
 async function listarPosEstoqueProdutosAcabados(dataPosicao) {
@@ -26,12 +27,11 @@ async function listarPosEstoqueProdutosAcabados(dataPosicao) {
     return response.data.produtos;
   } catch (error) {
     if (
-      error.response &&
-      error.response.data &&
-      error.response.data.faultstring === "ERROR: Não existem registros para a página [1]!"
+      !error.response &&
+      !error.response.data &&
+      !error.response.data.faultstring.includes("Não existem registros")
     )
-      console.log("Sem produtos para produzir");
-    else console.error("Erro ao obter registros da API:", error);
+      logger.error("Erro ao listar posição de estoque de produtos acabados (omie)", error);
 
     return [];
   }

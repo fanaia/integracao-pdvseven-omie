@@ -1,4 +1,5 @@
 const { executarQuery } = require("../../providers/dbPDV7");
+const logger = require("../../providers/logger");
 
 async function listarPedidos(idCaixa) {
   try {
@@ -57,10 +58,10 @@ async function listarPedidos(idCaixa) {
       ORDER BY 
         pe.IDPedido,
         pp.IDPedidoProduto
-    `;
-    // AND pe.IDPedido=60231
+      `;
+    // AND pe.IDPedido=60166
 
-    const result = await executarQuery(sql, []);
+    const result = await executarQuery(sql);
 
     const pedidos = {};
 
@@ -120,7 +121,8 @@ async function listarPedidos(idCaixa) {
 
     return Object.values(pedidos);
   } catch (error) {
-    console.error(`Erro ao listar pedidos: ${error}`);
+    logger.error(`Erro ao listar pedidos (pdv7): ${error}`);
+    return [];
   }
 }
 

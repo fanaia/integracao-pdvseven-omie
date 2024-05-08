@@ -1,4 +1,5 @@
 const { apiOmie, omieAuth } = require("../../providers/apiOmie");
+const logger = require("../../providers/logger");
 const { formatarData } = require("../../utils/dateUtils");
 
 async function incluirOrdemProducao(produto) {
@@ -26,18 +27,9 @@ async function incluirOrdemProducao(produto) {
     // console.log(JSON.stringify(body, null, 2));
 
     const response = await apiOmie.post("produtos/op/", body);
-    console.log(response.data);
     return response.data;
   } catch (error) {
-    if (
-      error.response &&
-      error.response.data &&
-      error.response.data.faultstring === "ERROR: Não existem registros para a página [1]!"
-    )
-      console.log("Sem produtos para produzir");
-    else console.error("Erro API - call IncluirOrdemProducao:", error);
-
-    return [];
+    logger.error("Erro ao incluir ordem de produção (omie)", produto, error);
   }
 }
 
@@ -65,15 +57,7 @@ async function concluirOrdemProducao(op, quantidadeProduzida) {
     console.log(response.data);
     return response.data;
   } catch (error) {
-    if (
-      error.response &&
-      error.response.data &&
-      error.response.data.faultstring === "ERROR: Não existem registros para a página [1]!"
-    )
-      console.log("Sem produtos para produzir");
-    else console.error("Erro API - call ConcluirOrdemProducao:", error);
-
-    return [];
+    logger.error("Erro ao concluir ordem de produção (omie)", op, error);
   }
 }
 
