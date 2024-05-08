@@ -31,7 +31,7 @@ async function importarProduto(produto) {
       await executarQuery(sql);
     }
   } catch (error) {
-    logger.error("Erro ao importar produto (pdv7):", produto, error);
+    logger.error(`Erro ao importar produto (pdv7): ${error} \n ${produto}`);
   }
 }
 

@@ -23,7 +23,7 @@ async function getConfig() {
 
     return config;
   } catch (error) {
-    logger.error("Erro ao ler configuração:", error);
+    logger.error(`Erro ao ler configuração: ${error}`);
     throw error;
   }
 }
@@ -41,7 +41,7 @@ async function getFormaPagByIdTipoPagamento(idTipoPagamento) {
 
     return formaPag;
   } catch (error) {
-    logger.error("Erro ao buscar forma de pagamento:", error);
+    logger.error(`Erro ao buscar forma de pagamento: ${error}`);
     throw error;
   }
 }
@@ -51,7 +51,7 @@ async function saveConfig(config) {
     const configJson = JSON.stringify(config, null, 2);
     await fs.writeFile(configPath, configJson, "utf8");
   } catch (error) {
-    logger.error("Erro ao salvar configuração:", error);
+    logger.error(`Erro ao salvar configuração: ${error}`);
     throw error;
   }
 }

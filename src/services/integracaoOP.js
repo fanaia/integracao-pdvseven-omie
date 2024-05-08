@@ -9,14 +9,12 @@ async function integracaoOP() {
       const produtosComSaldoNegativo = produtos.filter((produto) => produto.nSaldo < 0);
 
       for (const produto of produtosComSaldoNegativo) {
-        console.log("Produto:", produto.cDescricao, "Saldo:", produto.nSaldo);
         const op = await incluirOrdemProducao(produto);
-        await concluirOrdemProducao(op, produto.nSaldo * -1);
+        await concluirOrdemProducao(produto, op.cCodIntOP);
       }
     }
-  }
-  catch (error) {
-    logger.error("Erro ao integrar ordens de produção:", error);
+  } catch (error) {
+    logger.error("Erro ao integrar ordens de produção: " + error);
   }
 }
 

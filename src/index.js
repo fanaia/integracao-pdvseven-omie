@@ -9,9 +9,16 @@ const INTERVALO = 3 * 60 * 1000;
 
 async function integrar() {
   try {
+    console.log("Integrando clientes...");
     await integracaoClientes();
+
+    console.log("Integrando produtos...");
     await integracaoProdutos();
+
+    console.log("Integrando pedidos...");
     await integracaoPedidos();
+
+    console.log("Integrando ordens de produção...");
     await integracaoOP();
   } catch (error) {
     logger.error("Erro principal:", error);

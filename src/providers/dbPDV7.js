@@ -34,7 +34,7 @@ async function executarProc(nomeProcedure) {
     const result = await request.execute(nomeProcedure);
     return result.recordset;
   } catch (error) {
-    logger.error("Erro ao executar a stored procedure:", nomeProcedure, error);
+    logger.error(`Erro ao executar a stored procedure: ${nomeProcedure} \n ${error}`);
     throw error;
   }
 }
@@ -47,7 +47,7 @@ async function executarQuery(query) {
     const result = await request.query(query);
     return result.recordset;
   } catch (error) {
-    logger.error("Erro ao executar a query:", query, error);
+    logger.error(`Erro ao executar a query: ${query} \n ${error}`);
     throw error;
   }
 }

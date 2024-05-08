@@ -154,8 +154,14 @@ async function incluirCupomFiscal(cupomFiscal) {
     const response = await apiOmie.post("produtos/cupomfiscalincluir/", body);
     return response.data;
   } catch (error) {
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data?.faultstring;
+
     logger.error(
-      `Erro ao incluir cupom fiscal idPedido ${cupomFiscal.idPedido} (omie): ${error.response?.data.faultstring}`
+      "Erro ao incluir cupom fiscal idPedido " +
+        cupomFiscal.idPedido +
+        " (omie):" +
+        JSON.stringify(error.response?.data)
     );
   }
 }
@@ -194,8 +200,14 @@ async function fecharCaixa(caixa) {
     const response = await apiOmie.post("produtos/cupomfiscalincluir/", body);
     return response.data;
   } catch (error) {
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data?.faultstring;
+
     logger.error(
-      `Erro ao fechar caixa idCaixa ${caixa.idCaixa} (omie): ${error.response?.data.faultstring}`
+      "Erro ao fechar caixa idCaixa " +
+        caixa.idCaixa +
+        " (omie): " +
+        JSON.stringify(error.response?.data)
     );
   }
 }

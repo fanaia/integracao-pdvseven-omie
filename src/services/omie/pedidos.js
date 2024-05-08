@@ -72,9 +72,13 @@ async function incluirPedido(pedido) {
       error.response.data.faultstring.includes("Pedido já cadastrado")
     ) {
       logger.info(`Pedido ${pedido.idPedido} já está cadastrado (omie)`);
-    } else {
-      logger.error("Erro ao incluir pedido (omie)", pedido, error);
+      return;
     }
+
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data?.faultstring;
+
+    logger.error(`Erro ao incluir pedido (omie): ${JSON.stringify(error.response?.data)}`);
   }
 }
 

@@ -18,7 +18,7 @@ async function integracaoProdutos() {
       await saveConfig(config);
     }
   } catch (error) {
-    logger.error("Erro ao integrar produtos:", error);
+    logger.error("Erro ao integrar produtos: " + error);
   }
 }
 

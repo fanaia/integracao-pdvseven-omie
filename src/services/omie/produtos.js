@@ -29,13 +29,16 @@ async function listarProdutos(ultimaIntegracaoProdutos) {
     return response.data.produto_servico_cadastro;
   } catch (error) {
     if (
-      !error.response &&
-      !error.response.data &&
-      !error.response.data.faultstring.includes("Não existem registros")
+      error.response &&
+      error.response.data &&
+      error.response.data.faultstring.includes("Não existem registros")
     )
-      logger.error("Erro ao listar produtos (omie)", error);
+      return [];
 
-    return [];
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data?.faultstring;
+
+    logger.error(`Erro ao listar produtos (omie): ${JSON.stringify(error.response?.data)}`);
   }
 }
 

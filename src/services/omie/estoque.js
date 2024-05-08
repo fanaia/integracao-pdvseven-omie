@@ -31,9 +31,14 @@ async function listarPosEstoqueProdutosAcabados(dataPosicao) {
       !error.response.data &&
       !error.response.data.faultstring.includes("Não existem registros")
     )
-      logger.error("Erro ao listar posição de estoque de produtos acabados (omie)", error);
+      return [];
 
-    return [];
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data?.faultstring;
+
+    logger.error(
+      `Erro ao listar posição de estoque de produtos acabados (omie): ${JSON.stringify(error.response?.data)}`
+    );
   }
 }
 

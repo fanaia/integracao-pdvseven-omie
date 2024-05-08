@@ -29,17 +29,25 @@ async function incluirOrdemProducao(produto) {
     const response = await apiOmie.post("produtos/op/", body);
     return response.data;
   } catch (error) {
-    logger.error("Erro ao incluir ordem de produção (omie)", produto, error);
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data;
+
+    logger.error(
+      "Erro ao incluir ordem de produção do produto " +
+        produto.cDescricao +
+        " (omie): " +
+        JSON.stringify(error.response?.data)
+    );
   }
 }
 
-async function concluirOrdemProducao(op, quantidadeProduzida) {
+async function concluirOrdemProducao(produto, cCodIntOP) {
   try {
     const param = [
       {
-        cCodIntOP: op.cCodIntOP,
+        cCodIntOP: cCodIntOP,
         dDtConclusao: formatarData(new Date()),
-        nQtdeProduzida: quantidadeProduzida,
+        nQtdeProduzida: produto.nSaldo * -1,
         cObsConclusao: "",
       },
     ];
@@ -54,10 +62,17 @@ async function concluirOrdemProducao(op, quantidadeProduzida) {
     // console.log(JSON.stringify(body, null, 2));
 
     const response = await apiOmie.post("produtos/op/", body);
-    console.log(response.data);
     return response.data;
   } catch (error) {
-    logger.error("Erro ao concluir ordem de produção (omie)", op, error);
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data?.faultstring;
+
+    logger.error(
+      "Erro ao concluir ordem de produção do produto " +
+        produto.cDescricao +
+        " (omie): " +
+        JSON.stringify(error.response?.data)
+    );
   }
 }
 

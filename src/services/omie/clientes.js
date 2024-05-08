@@ -26,7 +26,12 @@ async function consultarCliente(cliente) {
     )
       return null;
 
-    logger.error("Erro ao consultar cliente (omie)", cliente, error);
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data?.faultstring;
+
+    logger.error(
+      `Erro ao consultar cliente (omie): ${JSON.stringify(error.response?.data)} \n ${cliente}`
+    );
   }
 }
 
@@ -52,9 +57,17 @@ async function incluirCliente(cliente) {
       error.response &&
       error.response.data &&
       error.response.data.faultstring.includes("Cliente já cadastrado")
-    )
+    ) {
       logger.info(`Cliente ${cliente.idCliente} já está cadastrado.`);
-    else logger.error("Erro ao incluir cliente (omie)", cliente, error);
+      return;
+    }
+
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data.faultstring;
+
+    logger.error(
+      `Erro ao incluir cliente (omie): ${JSON.stringify(error.response?.data)} \n ${cliente}`
+    );
   }
 }
 
@@ -80,9 +93,17 @@ async function alterarCliente(cliente) {
       error.response ||
       error.response.data.faultstring ||
       error.response.data.faultstring.includes("não cadastrado")
-    )
+    ) {
       logger.info(`Cliente ${cliente.idCliente} não está cadastrado.`);
-    else logger.error("Erro ao alterar cliente (omie)", cliente, error);
+      return;
+    }
+
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data.faultstring;
+
+    logger.error(
+      `Erro ao alterar cliente (omie): ${JSON.stringify(error.response?.data)} \n ${cliente}`
+    );
   }
 }
 
