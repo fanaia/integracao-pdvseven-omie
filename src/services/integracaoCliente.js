@@ -1,6 +1,7 @@
 const { getConfig, saveConfig } = require("../providers/config");
 const { listarClientes, obterDataMaisRecente } = require("./pdv7/clientes");
 const { incluirCliente, alterarCliente, consultarCliente } = require("./omie/clientes");
+const logger = require("../providers/logger");
 
 async function integracaoClientes() {
   try {

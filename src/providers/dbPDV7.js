@@ -1,4 +1,5 @@
 const sql = require("mssql");
+const logger = require("./logger");
 const config = {
   server: process.env.PDV7_DB_SERVER,
   authentication: {

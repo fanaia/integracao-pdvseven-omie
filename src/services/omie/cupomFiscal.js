@@ -1,5 +1,6 @@
 const { apiOmie, omieAuth } = require("../../providers/apiOmie");
 const { getFormaPagByIdTipoPagamento } = require("../../providers/config");
+const logger = require("../../providers/logger");
 const { formatarData, formatarHora } = require("../../utils/dateUtils");
 const { getMD5, base64ToString } = require("../../utils/hashUtils");
 

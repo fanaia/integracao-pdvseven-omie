@@ -2,6 +2,7 @@ const sql = require("mssql");
 const { getConfig, saveConfig } = require("../providers/config");
 const { listarProdutos, obterDataMaisRecente } = require("./omie/produtos");
 const { importarProduto } = require("./pdv7/produtos");
+const logger = require("../providers/logger");
 
 async function integracaoProdutos() {
   try {
