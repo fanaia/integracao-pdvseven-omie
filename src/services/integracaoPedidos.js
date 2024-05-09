@@ -19,8 +19,9 @@ async function integracaoPedidos() {
           for (const pedido of pedidos) {
             await incluirCupomFiscal(pedido);
           }
+          
+          await fecharCaixa(caixa);
         }
-        await fecharCaixa(caixa);
       }
 
       config.ultimaIntegracaoCaixas = await obterDataMaisRecente(caixas);

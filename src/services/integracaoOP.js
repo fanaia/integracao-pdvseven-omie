@@ -6,6 +6,8 @@ async function integracaoOP() {
   try {
     const produtos = await listarPosEstoqueProdutosAcabados(new Date());
     if (produtos && produtos.length > 0) {
+      logger.info(`Integrando ${produtos.length} ordens de produção...`);
+
       const produtosComSaldoNegativo = produtos.filter((produto) => produto.nSaldo < 0);
 
       for (const produto of produtosComSaldoNegativo) {

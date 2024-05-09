@@ -16,6 +16,7 @@ async function integracaoClientes() {
     const clientes = await listarClientes(config.ultimaIntegracaoClientes);
 
     if (clientes && clientes.length > 0) {
+      logger.info(`Integrando ${clientes.length} clientes...`);
       for (const cliente of clientes) {
         const clienteCadastrado = await consultarCliente(cliente);
         if (clienteCadastrado) await alterarCliente(cliente);
