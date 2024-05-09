@@ -12,7 +12,7 @@ async function importarProduto(produto) {
       ativo = 0;
     }
 
-    const sql = `SELECT idproduto FROM tbProduto WHERE Codigo = '${codigo_produto}' OR Nome = TRIM('${descricao}')`;
+    const sql = `SELECT idproduto FROM tbProduto WHERE Codigo = '${codigo_produto}' OR TRIM(Nome) = TRIM('${descricao}')`;
     let product = await executarQuery(sql);
 
     if (product.length > 0) {
