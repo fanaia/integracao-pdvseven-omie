@@ -1,5 +1,6 @@
 const { formatarData, formatarHora } = require("../../utils/dateUtils");
 const { apiOmie, omieAuth } = require("../../providers/apiOmie");
+const logger = require("../../providers/logger");
 
 async function listarProdutos(ultimaIntegracaoProdutos) {
   try {
@@ -30,12 +31,14 @@ async function listarProdutos(ultimaIntegracaoProdutos) {
     if (
       error.response &&
       error.response.data &&
-      error.response.data.faultstring === "ERROR: Não existem registros para a página [1]!"
+      error.response.data.faultstring.includes("Não existem registros")
     )
-      console.log("Sem produtos para importar");
-    else console.error("Erro ao obter registros da API:", error);
+      return [];
 
-    return [];
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data?.faultstring;
+
+    logger.error(`Erro ao listar produtos (omie): ${JSON.stringify(error.response?.data)}`);
   }
 }
 

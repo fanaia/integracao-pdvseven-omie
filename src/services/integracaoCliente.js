@@ -1,30 +1,43 @@
 const { getConfig, saveConfig } = require("../providers/config");
-const { listarClientes, obterDataMaisRecente } = require("./pdv7/clientes");
+const { listarClientes, ajustarDataAlteracao } = require("./pdv7/clientes");
 const { incluirCliente, alterarCliente, consultarCliente } = require("./omie/clientes");
+const logger = require("../providers/logger");
 
 async function integracaoClientes() {
-  console.log("Integração Clientes");
+  let counterTotal = 0;
+  let dtUltimaIntegracao;
 
   try {
     const config = await getConfig();
+    dtUltimaIntegracao = config.ultimaIntegracaoClientes;
+
     await ajustarDataAlteracao();
 
     const clientes = await listarClientes(config.ultimaIntegracaoClientes);
 
     if (clientes && clientes.length > 0) {
+      logger.info(`Integrando ${clientes.length} clientes...`);
       for (const cliente of clientes) {
-        console.log("Cliente", cliente.nomeCompleto);
-
         const clienteCadastrado = await consultarCliente(cliente);
         if (clienteCadastrado) await alterarCliente(cliente);
         else await incluirCliente(cliente);
-      }
 
-      config.ultimaIntegracaoClientes = await obterDataMaisRecente(clientes);
-      await saveConfig(config);
+        dtUltimaIntegracao = cliente.dtAlteracao;
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        counterTotal++;
+      }
     }
+
+    config.ultimaIntegracaoClientes = dtUltimaIntegracao;
+    await saveConfig(config);
   } catch (error) {
-    console.error("Erro ao integrar clientes:", error);
+    logger.error("Erro ao integrar clientes: " + error);
+    logger.info("Total de clientes integrados: " + counterTotal + " de " + clientes.length);
+
+    const config = await getConfig();
+    config.ultimaIntegracaoClientes = dtUltimaIntegracao;
+    await saveConfig(config);
   }
 }
 

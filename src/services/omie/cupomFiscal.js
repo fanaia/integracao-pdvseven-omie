@@ -1,5 +1,6 @@
 const { apiOmie, omieAuth } = require("../../providers/apiOmie");
 const { getFormaPagByIdTipoPagamento } = require("../../providers/config");
+const logger = require("../../providers/logger");
 const { formatarData, formatarHora } = require("../../utils/dateUtils");
 const { getMD5, base64ToString } = require("../../utils/hashUtils");
 
@@ -37,11 +38,12 @@ async function incluirCupomFiscal(cupomFiscal) {
             const valorDesconto =
               produto.valorDescontoProduto +
               (cupomFiscal.valorDescontoPedido / valorProdutos) * valorProduto;
+            const pValorServico = cupomFiscal.valorServico / valorProdutos;
             const valorServico = (cupomFiscal.valorServico / valorProdutos) * valorProduto;
 
-            const vDesc = Math.round(valorDesconto * 100) / 100;
+            const vDesc = 0;
             const vItem = Math.round((valorProduto - valorDesconto + valorServico) * 100) / 100;
-            const vProd = Math.round((valorProduto - valorDesconto) * 100) / 100;
+            const vProd = Math.round(valorProduto * 100) / 100;
 
             return {
               lCanc: false,
@@ -66,7 +68,7 @@ async function incluirCupomFiscal(cupomFiscal) {
           total: {
             vAcresc: cupomFiscal.valorTaxaEntrega,
             vCF: cupomFiscal.valorTotal,
-            vDesc: cupomFiscal.valorDescontoPedido,
+            vDesc: 0,
             vItem: valorProdutos,
           },
           tpAmb: "P",
@@ -128,6 +130,18 @@ async function incluirCupomFiscal(cupomFiscal) {
       },
     ];
 
+    // Ajuste de arredondamento somando a diferença no item de maior valor
+    let somaDet = param[0].cfeSat.det.reduce((soma, item) => soma + item.prod.vItem, 0);
+    let diferenca = +(cupomFiscal.valorTotal - somaDet).toFixed(2);
+
+    if (diferenca !== 0) {
+      let itemDeMaiorValor = param[0].cfeSat.det.reduce(
+        (max, item) => (item.prod.vItem > max.prod.vItem ? item : max),
+        param[0].cfeSat.det[0]
+      );
+      itemDeMaiorValor.prod.vItem += diferenca;
+    }
+
     const body = {
       call: "IncluirCfeSat",
       app_key: omieAuth.appKey,
@@ -138,12 +152,16 @@ async function incluirCupomFiscal(cupomFiscal) {
     // console.log(JSON.stringify(body, null, 2));
 
     const response = await apiOmie.post("produtos/cupomfiscalincluir/", body);
-    // console.log(response.data?.faultstring);
     return response.data;
   } catch (error) {
-    // throw error;
-    console.log(
-      `Erro ao incluir cupom fiscal idPedido ${cupomFiscal.idPedido}: ${error.response?.data.faultstring}`
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data?.faultstring;
+
+    logger.error(
+      "Erro ao incluir cupom fiscal idPedido " +
+        cupomFiscal.idPedido +
+        " (omie):" +
+        JSON.stringify(error.response?.data)
     );
   }
 }
@@ -182,17 +200,15 @@ async function fecharCaixa(caixa) {
     const response = await apiOmie.post("produtos/cupomfiscalincluir/", body);
     return response.data;
   } catch (error) {
-    if (
-      error.response &&
-      error.response.data &&
-      error.response.data.faultstring === "ERROR: Não existem registros para a página [1]!"
-    )
-      console.log("Sem produtos para produzir");
-    else {
-      console.error("Erro ao obter registros da API:", error);
-    }
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data?.faultstring;
 
-    return [];
+    logger.error(
+      "Erro ao fechar caixa idCaixa " +
+        caixa.idCaixa +
+        " (omie): " +
+        JSON.stringify(error.response?.data)
+    );
   }
 }
 

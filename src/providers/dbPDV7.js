@@ -1,4 +1,5 @@
 const sql = require("mssql");
+const logger = require("./logger");
 const config = {
   server: process.env.PDV7_DB_SERVER,
   authentication: {
@@ -13,7 +14,7 @@ const config = {
     trustServerCertificate: true,
     database: process.env.PDV7_DB_NAME,
   },
-  requestTimeout: 60000, // tempo limite de 60 segundos
+  requestTimeout: 60000,
 };
 
 let pool;
@@ -25,36 +26,28 @@ async function getPool() {
   return pool;
 }
 
-async function executarProc(nomeProcedure, parametros) {
+async function executarProc(nomeProcedure) {
   try {
     const pool = await getPool();
     const request = pool.request();
-
-    for (const parametro of parametros) {
-      request.input(parametro.nome, parametro.tipo, parametro.valor);
-    }
 
     const result = await request.execute(nomeProcedure);
     return result.recordset;
   } catch (error) {
-    console.error("Erro ao executar a stored procedure:", error);
+    logger.error(`Erro ao executar a stored procedure: ${nomeProcedure} \n ${error}`);
     throw error;
   }
 }
 
-async function executarQuery(query, parametros) {
+async function executarQuery(query) {
   try {
     const pool = await getPool();
     const request = pool.request();
 
-    for (const parametro of parametros) {
-      request.input(parametro.nome, parametro.tipo, parametro.valor);
-    }
-
     const result = await request.query(query);
     return result.recordset;
   } catch (error) {
-    console.error("Erro ao executar a query:", error);
+    logger.error(`Erro ao executar a query: ${query} \n ${error}`);
     throw error;
   }
 }

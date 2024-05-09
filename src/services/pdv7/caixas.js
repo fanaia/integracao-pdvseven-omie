@@ -1,4 +1,5 @@
 const { executarQuery } = require("../../providers/dbPDV7");
+const logger = require("../../providers/logger");
 
 async function listarCaixasFechados(ultimaIntegracaoCaixas) {
   try {
@@ -16,16 +17,12 @@ async function listarCaixasFechados(ultimaIntegracaoCaixas) {
         c.idCaixa, c.idPDV, c.dtAbertura, c.dtFechamento 
       ORDER BY c.dtFechamento DESC `;
 
-      // console.log(sql)
-
-    // const sql = `SELECT idCaixa, idPDV, dtAbertura, dtFechamento FROM tbCaixa DtFechamento WHERE idCaixa=18087`;
-    const result = await executarQuery(sql, []);
-
-    if (result.length === 0) console.log("Sem caixas fechados para integrar");
+    const result = await executarQuery(sql);
 
     return Object.values(result);
   } catch (error) {
-    console.error(`Erro ao listar caixas: ${error}`);
+    logger.error(`Erro ao listar caixas fechados (pdv7): ${error}`);
+    return [];
   }
 }
 

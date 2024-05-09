@@ -3,28 +3,32 @@ const { integracaoProdutos } = require("./services/integracaoProdutos");
 const { integracaoClientes } = require("./services/integracaoCliente");
 const { integracaoPedidos } = require("./services/integracaoPedidos");
 const { integracaoOP } = require("./services/integracaoOP");
+const logger = require("./providers/logger");
 
-const INTERVALO = 1 * 60 * 1000;
+const INTERVALO = 3 * 60 * 1000;
 
 async function integrar() {
   try {
-    console.log("Iniciando integração");
+    console.log("Integrando clientes...");
+    await integracaoClientes();
 
-    // await integracaoClientes();
+    console.log("Integrando produtos...");
     await integracaoProdutos();
-    await integracaoPedidos();
-    // await integracaoOP();
 
-    console.log("Integração finalizada");
+    console.log("Integrando pedidos...");
+    await integracaoPedidos();
+
+    console.log("Integrando ordens de produção...");
+    await integracaoOP();
   } catch (error) {
-    console.error("Erro principal:", error);
+    logger.error("Erro principal:", error);
   } finally {
     setTimeout(integrar, INTERVALO);
   }
 }
 
 function main() {
-  console.log("Iniciando serviço de Integração PDVSeven x Omie");
+  logger.info("Iniciando serviço de Integração PDVSeven x Omie");
   integrar();
 }
 

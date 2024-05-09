@@ -1,4 +1,5 @@
 const { apiOmie, omieAuth } = require("../../providers/apiOmie");
+const logger = require("../../providers/logger");
 
 async function consultarCliente(cliente) {
   try {
@@ -21,10 +22,16 @@ async function consultarCliente(cliente) {
     if (
       error.response &&
       error.response.data &&
-      error.response.data.faultstring === "ERROR: Cliente não cadastrado para o Código [0] !"
+      error.response.data.faultstring.includes("não cadastrado")
     )
       return null;
-    else throw error;
+
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data?.faultstring;
+
+    logger.error(
+      `Erro ao consultar cliente (omie): ${JSON.stringify(error.response?.data)} \n ${cliente}`
+    );
   }
 }
 
@@ -51,10 +58,16 @@ async function incluirCliente(cliente) {
       error.response.data &&
       error.response.data.faultstring.includes("Cliente já cadastrado")
     ) {
-      console.log(`Cliente ${cliente.idCliente} já está cadastrado.`);
-    } else {
-      throw error;
+      logger.info(`Cliente ${cliente.idCliente} já está cadastrado.`);
+      return;
     }
+
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data.faultstring;
+
+    logger.error(
+      `Erro ao incluir cliente (omie): ${JSON.stringify(error.response?.data)} \n ${cliente}`
+    );
   }
 }
 
@@ -77,14 +90,20 @@ async function alterarCliente(cliente) {
     const response = await apiOmie.post("geral/clientes/", body);
   } catch (error) {
     if (
-      error.response &&
-      error.response.data &&
-      error.response.data.faultstring.includes("Cliente não cadastrado")
+      error.response ||
+      error.response.data.faultstring ||
+      error.response.data.faultstring.includes("não cadastrado")
     ) {
-      console.log(`Cliente ${cliente.idCliente} não cadastrado.`);
-    } else {
-      throw error;
+      logger.info(`Cliente ${cliente.idCliente} não está cadastrado.`);
+      return;
     }
+
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data.faultstring;
+
+    logger.error(
+      `Erro ao alterar cliente (omie): ${JSON.stringify(error.response?.data)} \n ${cliente}`
+    );
   }
 }
 

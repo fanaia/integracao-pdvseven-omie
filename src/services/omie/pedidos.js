@@ -1,4 +1,5 @@
 const { apiOmie, omieAuth } = require("../../providers/apiOmie");
+const logger = require("../../providers/logger");
 const { formatarData } = require("../../utils/dateUtils");
 
 async function incluirPedido(pedido) {
@@ -61,19 +62,23 @@ async function incluirPedido(pedido) {
       param,
     };
 
-    console.log(JSON.stringify(body, null, 2));
+    // console.log(JSON.stringify(body, null, 2));
 
-    // const response = await apiOmie.post("geral/pedidos/", body);
+    const response = await apiOmie.post("geral/pedidos/", body);
   } catch (error) {
     if (
       error.response &&
       error.response.data &&
       error.response.data.faultstring.includes("Pedido já cadastrado")
     ) {
-      console.log(`Pedido ${pedido.idPedido} já está cadastrado.`);
-    } else {
-      throw error;
+      logger.info(`Pedido ${pedido.idPedido} já está cadastrado (omie)`);
+      return;
     }
+
+    if (error.response?.data?.faultstring?.includes("bloqueada por consumo indevido"))
+      throw error.response?.data?.faultstring;
+
+    logger.error(`Erro ao incluir pedido (omie): ${JSON.stringify(error.response?.data)}`);
   }
 }
 
